@@ -10,13 +10,18 @@ class BlogController extends Controller
 {
     public function index()
     {
-        // Your code for the 'index' action
+        dd('asdf');
     }
 
-    public function show($id)
+    public function edit($id)
     {
-        // Your code for the 'show' action
+        dd($id);
+    }
+    public function update(Request $request, $id){
+        dd($id);
     }
 
-    // Add more actions as needed
+    public function delete($id){
+        dd($id);
+    }
 }
