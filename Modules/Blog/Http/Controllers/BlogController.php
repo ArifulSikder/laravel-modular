@@ -2,38 +2,54 @@
 
 namespace Modules\Blog\Http\Controllers;
 
-use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Contracts\Support\Renderable;
+use Modules\Blog\Repositories\BlogRepository;
 
 class BlogController extends Controller
 {
+    protected $blogRepo;
+    public function __construct(BlogRepository $blogRepo)
+    {
+        $this->blogRepo = $blogRepo;
+    }
+
     /**
      * Display a listing of the resource.
      * @return Renderable
      */
     public function index()
     {
-        return view('blog::index');
+        $items = $this->blogRepo->getAll();
+        if ($items->isEmpty()) {
+            return response()->json([
+                "code" => 404,
+                "message" => "No items found",
+                "data" => []
+            ], 404);
+        }
+        return response()->json([
+            "code" => 200,
+            "message" => "Data retrieved successfully",
+            "data" => [
+                "items" => $items
+            ]
+        ]);
     }
-
-    /**
-     * Show the form for creating a new resource.
-     * @return Renderable
-     */
-    public function create()
-    {
-        return view('blog::create');
-    }
-
+    
     /**
      * Store a newly created resource in storage.
      * @param Request $request
      * @return Renderable
      */
-    public function store(Request $request)
+    public function store(Request $validatedData)
     {
-        //
+        $product = $this->blogRepo->create($validatedData);
+        return response()->json([
+            "code" => 200,
+            "message" => "Data saved successfully"
+        ]);
     }
 
     /**

@@ -8,9 +8,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Blog extends Model
 {
     use HasFactory;
+    protected $guarded = [];
+    public $timestamps = true;
 
-    protected $fillable = [];
-    
     protected static function newFactory()
     {
         return \Modules\Blog\Database\factories\BlogFactory::new();
