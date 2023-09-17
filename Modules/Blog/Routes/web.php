@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
 use Modules\Blog\Http\Controllers\BlogController;
 
 /*
@@ -12,9 +13,3 @@ use Modules\Blog\Http\Controllers\BlogController;
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::controller(BlogController::class)->prefix('blog')->name('blog.')->group(function () {
-    Route::any('/index', 'index')->name('index');
-    Route::any('/store', 'store')->name('store');
-    Route::any('/update', 'update')->name('update');
-    Route::any('/delete', 'update')->name('update');
-});

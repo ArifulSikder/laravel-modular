@@ -1,11 +1,12 @@
 <?php
 
-namespace Modules\Blog\Http\Controllers;
+namespace Modules\Blog\Http\Controllers\Api\V1;
+
 
 use Illuminate\Http\Request;
-use Illuminate\Routing\Controller;
-use Illuminate\Contracts\Support\Renderable;
+use App\Http\Controllers\Controller;
 use Modules\Blog\Repositories\BlogRepository;
+
 
 class BlogController extends Controller
 {
@@ -24,12 +25,14 @@ class BlogController extends Controller
         $items = $this->blogRepo->getAll();
         if ($items->isEmpty()) {
             return response()->json([
+                'success' => false,
                 "code" => 404,
                 "message" => "No items found",
                 "data" => []
             ], 404);
         }
         return response()->json([
+            'success' => true,
             "code" => 200,
             "message" => "Data retrieved successfully",
             "data" => [
@@ -37,7 +40,7 @@ class BlogController extends Controller
             ]
         ]);
     }
-    
+
     /**
      * Store a newly created resource in storage.
      * @param Request $request
