@@ -2,10 +2,11 @@
 
 namespace Modules\Blog\Http\Controllers\Api\V1;
 
-
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
 use Modules\Blog\Repositories\BlogRepository;
+use Modules\Blog\Http\Requests\Backend\BlogStoreRequest;
 
 
 class BlogController extends Controller
@@ -46,13 +47,38 @@ class BlogController extends Controller
      * @param Request $request
      * @return Renderable
      */
-    public function store(Request $validatedData)
+    public function store(Request $request)
     {
-        $product = $this->blogRepo->create($validatedData);
-        return response()->json([
-            "code" => 200,
-            "message" => "Data saved successfully"
+
+        $validator = Validator::make($request->all(),[
+            'title'      => 'required',
         ]);
+
+        if ($validator->fails()) {
+            $message =  ['error' => $validator->errors()->all()];
+            return response()->json([
+                'success' => false,
+                "code" => 400,
+                "message" =>  $message,
+                "data" => []
+            ]);
+        }
+
+
+        $result =  $this->blogRepo->store($request);
+        if ($result) {
+            return response()->json([
+                "success" => true,
+                "code" => 200,
+                "message" => "Data saved successfully"
+            ]);
+        } else {
+            return response()->json([
+                "success" => false,
+                "code" => 400,
+                "message" => "Something went wrong please try again"
+            ]);
+        }
     }
 
     /**
