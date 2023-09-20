@@ -5,6 +5,7 @@ namespace Modules\Blog\Http\Controllers\Api\V1;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
+use Modules\Blog\Http\Resources\PostResource;
 use Modules\Blog\Repositories\BlogRepository;
 use Modules\Blog\Http\Requests\Backend\BlogStoreRequest;
 
@@ -36,9 +37,7 @@ class BlogController extends Controller
             'success' => true,
             "code" => 200,
             "message" => "Data retrieved successfully",
-            "data" => [
-                "items" => $items
-            ]
+            "data" => ["items" => $items]
         ]);
     }
 
@@ -49,22 +48,17 @@ class BlogController extends Controller
      */
     public function store(Request $request)
     {
-
         $validator = Validator::make($request->all(),[
-            'title'      => 'required',
+            'title' => 'required|string|min:10|max:255|unique:blogs,title'
         ]);
-
         if ($validator->fails()) {
-            $message =  ['error' => $validator->errors()->all()];
             return response()->json([
                 'success' => false,
                 "code" => 400,
-                "message" =>  $message,
+                "message" =>  $validator->errors()->all()[0],
                 "data" => []
             ]);
         }
-
-
         $result =  $this->blogRepo->store($request);
         if ($result) {
             return response()->json([
@@ -86,9 +80,35 @@ class BlogController extends Controller
      * @param int $id
      * @return Renderable
      */
-    public function show($id)
+    public function show(Request $request)
     {
-        return view('blog::show');
+        $validator = Validator::make($request->all(),[
+            'id' => 'required|numeric'
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                "code" => 400,
+                "message" =>  $validator->errors()->all()[0],
+                "data" => []
+            ]);
+        }
+
+        $result = $this->blogRepo->findById($request->id);
+        if ($result) {
+            return response()->json([
+                "success" => true,
+                "code" => 200,
+                "message" => "Data retrieved successfully",
+                "item" => new PostResource($result)
+            ]);
+        } else {
+            return response()->json([
+                "success" => false,
+                "code" => 400,
+                "message" => "Something went wrong please try again"
+            ]);
+        }
     }
 
     /**
