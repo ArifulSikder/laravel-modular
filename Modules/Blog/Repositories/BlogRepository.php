@@ -30,7 +30,6 @@ class BlogRepository
             return false;
         }
     }
-
     public function findById($id)
     {
         return $this->model->find($id);
