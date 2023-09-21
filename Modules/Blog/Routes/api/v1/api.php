@@ -18,5 +18,5 @@ Route::controller(BlogController::class)->prefix('blog')->name('blog.')->group(f
     Route::any('/store', 'store');
     Route::any('/show', 'show');
     Route::any('/update', 'update');
-    Route::any('/delete', 'delete');
+    Route::delete('/delete', 'delete');
 });

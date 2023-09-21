@@ -8,7 +8,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use Modules\Blog\Http\Resources\PostResource;
 use Modules\Blog\Repositories\BlogRepository;
-use Modules\Blog\Http\Requests\Backend\BlogStoreRequest;
 
 class BlogController extends Controller
 {
@@ -159,8 +158,24 @@ class BlogController extends Controller
      * @param int $id
      * @return Renderable
      */
-    public function destroy($id)
+    public function delete(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|numeric'
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                "code" => 400,
+                "message" =>  $validator->errors()->all()[0],
+            ]);
+        }
+        $result = $this->blogRepo->destroy($request->id);
+
+        if ($result) {
+            return response()->json(['message' => 'Data deleted successfully']);
+        } else {
+            return response()->json(['message' => 'Data not found'], 404);
+        }
     }
 }

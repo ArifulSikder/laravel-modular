@@ -47,4 +47,10 @@ class BlogRepository
             return false;
         }
     }
+
+    public function destroy($id)
+    {
+        return Blog::destroy($id);
+    }
+
 }
