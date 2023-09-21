@@ -21,9 +21,9 @@ class BlogRepository
     public function store($request)
     {
         try {
-            $itemStore            = new $this->model();
-            $itemStore->title     = $request->title;
-            $itemStore->save();
+            $item            = new $this->model();
+            $item->title     = $request->title;
+            $item->save();
             return true;
         } catch (Exception $th) {
             Log::info($th);
@@ -36,4 +36,16 @@ class BlogRepository
         return $this->model->find($id);
     }
 
+    public function update($request)
+    {
+        try {
+            $item            = $this->model->find($request->id);
+            $item->title     = $request->title;
+            $item->save();
+            return true;
+        } catch (Exception $th) {
+            Log::info($th);
+            return false;
+        }
+    }
 }

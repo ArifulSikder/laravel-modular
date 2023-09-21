@@ -3,12 +3,12 @@
 namespace Modules\Blog\Http\Controllers\Api\V1;
 
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use Modules\Blog\Http\Resources\PostResource;
 use Modules\Blog\Repositories\BlogRepository;
 use Modules\Blog\Http\Requests\Backend\BlogStoreRequest;
-
 
 class BlogController extends Controller
 {
@@ -30,14 +30,14 @@ class BlogController extends Controller
                 'success' => false,
                 "code" => 404,
                 "message" => "No items found",
-                "data" => []
+                "items" => []
             ], 404);
         }
         return response()->json([
             'success' => true,
             "code" => 200,
             "message" => "Data retrieved successfully",
-            "data" => ["items" => $items]
+            "items" => new PostResource($items)
         ]);
     }
 
@@ -48,7 +48,7 @@ class BlogController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(),[
+        $validator = Validator::make($request->all(), [
             'title' => 'required|string|min:10|max:255|unique:blogs,title'
         ]);
         if ($validator->fails()) {
@@ -56,7 +56,7 @@ class BlogController extends Controller
                 'success' => false,
                 "code" => 400,
                 "message" =>  $validator->errors()->all()[0],
-                "data" => []
+                "items" => []
             ]);
         }
         $result =  $this->blogRepo->store($request);
@@ -82,7 +82,7 @@ class BlogController extends Controller
      */
     public function show(Request $request)
     {
-        $validator = Validator::make($request->all(),[
+        $validator = Validator::make($request->all(), [
             'id' => 'required|numeric'
         ]);
         if ($validator->fails()) {
@@ -90,7 +90,7 @@ class BlogController extends Controller
                 'success' => false,
                 "code" => 400,
                 "message" =>  $validator->errors()->all()[0],
-                "data" => []
+                "items" => []
             ]);
         }
 
@@ -112,24 +112,46 @@ class BlogController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     * @param int $id
-     * @return Renderable
-     */
-    public function edit($id)
-    {
-        return view('blog::edit');
-    }
-
-    /**
      * Update the specified resource in storage.
      * @param Request $request
      * @param int $id
      * @return Renderable
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'id' => 'required',
+            'title' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('blogs')->ignore($request->id),
+            ],
+        ]);
+        // dd($request->all(), $validator);
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                "code" => 400,
+                "message" =>  $validator->errors()->all()[0],
+                "items" => []
+            ]);
+        }
+
+        $result =  $this->blogRepo->update($request);
+        if ($result) {
+            return response()->json([
+                "success" => true,
+                "code" => 200,
+                "message" => "Data updated successfully"
+            ]);
+        } else {
+            return response()->json([
+                "success" => false,
+                "code" => 400,
+                "message" => "Something went wrong please try again"
+            ]);
+        }
     }
 
     /**
