@@ -54,7 +54,7 @@ class BlogController extends Controller
             return response()->json([
                 'success' => false,
                 "code" => 400,
-                "message" =>  $validator->errors()->all()[0],
+                "message" =>  $validator->errors()->all(),
                 "items" => []
             ]);
         }
@@ -88,7 +88,7 @@ class BlogController extends Controller
             return response()->json([
                 'success' => false,
                 "code" => 400,
-                "message" =>  $validator->errors()->all()[0],
+                "message" =>  $validator->errors()->all(),
                 "items" => []
             ]);
         }
@@ -132,7 +132,7 @@ class BlogController extends Controller
             return response()->json([
                 'success' => false,
                 "code" => 400,
-                "message" =>  $validator->errors()->all()[0],
+                "message" =>  $validator->errors()->all(),
                 "items" => []
             ]);
         }
@@ -167,7 +167,7 @@ class BlogController extends Controller
             return response()->json([
                 'success' => false,
                 "code" => 400,
-                "message" =>  $validator->errors()->all()[0],
+                "message" =>  $validator->errors()->all(),
             ]);
         }
         $result = $this->blogRepo->destroy($request->id);
