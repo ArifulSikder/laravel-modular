@@ -17,7 +17,6 @@ class CheckRole
     public function handle(Request $request, Closure $next, ...$roles): Response
     {
         $user = Auth::user();
-
         if (!$user->hasAnyRole($roles)) {
             abort(403, 'Unauthorized.');
         }

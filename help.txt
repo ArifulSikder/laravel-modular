@@ -1,14 +1,10 @@
 php artisan module:use Blog
 
-
 php artisan module:make-migration create_blogs_table Blog
-
 
 php artisan module:make-model Post Blog
 
-
 php artisan module:seed Blog
-
 
 php artisan module:make CoreAuth
 

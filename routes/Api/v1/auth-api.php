@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Acl\AuthController;
+use App\Http\Controllers\Acl\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,7 +15,7 @@ use App\Http\Controllers\Acl\AuthController;
 |
 */
 
-Route::group(['middleware' => ['cors', 'json.response']], function () {
+// Route::group(['middleware' => ['cors', 'json.response']], function () {
     Route::controller(AuthController::class)->group(function () {
         Route::any('login', 'login');
     });
@@ -27,4 +28,4 @@ Route::group(['middleware' => ['cors', 'json.response']], function () {
             });
         });
     });
-});
+// });
