@@ -15,10 +15,16 @@ use App\Http\Controllers\Acl\AuthController;
 */
 
 Route::group(['middleware' => ['cors', 'json.response']], function () {
-    Route::group(['prefix' => 'user'], function () {
-        Route::controller(AuthController::class)->group(function () {
-            Route::any('create', 'create');
-            Route::any('login', 'login');
+    Route::controller(AuthController::class)->group(function () {
+        Route::any('login', 'login');
+    });
+    
+    // Your protected routes here
+    Route::middleware('auth:api')->group(function () {
+        Route::group(['prefix' => 'user'], function () {
+            Route::controller(UserController::class)->group(function () {
+                Route::any('index', 'index');
+            });
         });
     });
 });
