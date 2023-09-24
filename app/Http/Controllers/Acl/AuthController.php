@@ -20,7 +20,6 @@ class AuthController extends Controller
         $this->userRepository = $userRepository;
     }
 
-
     public function create(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -30,25 +29,14 @@ class AuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                "code" => 400,
-                "error" =>  $validator->errors(),
-                "item" => []
-            ]);
-
+            return apiValidationErrorResponse($validator->errors(), 'Validation Error');
         }
+
         $result =  $this->userRepository->store($request);
         if ($result) {
-            return response()->json([
-                "success" => true,
-                "code" => 200,
-                "message" => "User saved successfully"
-            ]);
+            return apiSuccessResponse($result = null, 'Data saved successfully');
         } else {
-            return response()->json([
-                "code" => 400,
-                "message" => "Something went wrong please try again"
-            ]);
+            return apiResponseCommonError($validator->errors(), 'Validation Error');
         }
     }
 
