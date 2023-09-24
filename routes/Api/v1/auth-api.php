@@ -5,7 +5,7 @@ use App\Http\Controllers\Acl\AuthController;
 use App\Http\Controllers\Acl\UserController;
 
 
-// Route::group(['middleware' => ['cors', 'json.response']], function () {
+//Route::group(['middleware' => ['cors', 'json.response']], function () {
     Route::controller(AuthController::class)->group(function () {
         Route::any('login', 'login');
     });
