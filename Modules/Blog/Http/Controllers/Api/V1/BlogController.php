@@ -25,19 +25,9 @@ class BlogController extends Controller
     {
         $items = $this->blogRepo->getAll();
         if ($items->isEmpty()) {
-            return response()->json([
-                'success' => false,
-                "code" => 404,
-                "message" => "No items found",
-                "items" => []
-            ], 404);
+            return apiErrorResponse($items);
         }
-        return response()->json([
-            'success' => true,
-            "code" => 200,
-            "message" => "Data retrieved successfully",
-            "items" => new PostResource($items)
-        ]);
+        return apiSuccessResponse($items, 'Data fetched successfully', 201);
     }
 
     /**
@@ -51,26 +41,13 @@ class BlogController extends Controller
             'title' => 'required|string|min:10|max:255|unique:blogs,title'
         ]);
         if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                "code" => 400,
-                "message" =>  $validator->errors()->all(),
-                "items" => []
-            ]);
+            return apiValidationErrorResponse($validator->errors(), 'Validation Error');
         }
         $result =  $this->blogRepo->store($request);
         if ($result) {
-            return response()->json([
-                "success" => true,
-                "code" => 200,
-                "message" => "Data saved successfully"
-            ]);
+            return apiSuccessResponse($result = null, 'Data saved successfully');
         } else {
-            return response()->json([
-                "success" => false,
-                "code" => 400,
-                "message" => "Something went wrong please try again"
-            ]);
+            return apiResponseCommonError($validator->errors(), 'Validation Error');
         }
     }
 
@@ -85,28 +62,16 @@ class BlogController extends Controller
             'id' => 'required|numeric'
         ]);
         if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                "code" => 400,
-                "message" =>  $validator->errors()->all(),
-                "items" => []
-            ]);
+            return apiValidationErrorResponse($validator->errors(), 'Validation Error');
         }
-
+        // dd($validator);
         $result = $this->blogRepo->findById($request->id);
+
         if ($result) {
-            return response()->json([
-                "success" => true,
-                "code" => 200,
-                "message" => "Data retrieved successfully",
-                "item" => new PostResource($result)
-            ]);
+            return apiSuccessResponse($result = new PostResource($result), 'Data retrieved successfully');
+
         } else {
-            return response()->json([
-                "success" => false,
-                "code" => 400,
-                "message" => "Something went wrong please try again"
-            ]);
+            return apiResponseCommonError($validator->errors(), 'Validation Error');
         }
     }
 
@@ -127,29 +92,16 @@ class BlogController extends Controller
                 Rule::unique('blogs')->ignore($request->id),
             ],
         ]);
-        // dd($request->all(), $validator);
         if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                "code" => 400,
-                "message" =>  $validator->errors()->all(),
-                "items" => []
-            ]);
+            return apiValidationErrorResponse($validator->errors(), 'Validation Error');
         }
 
         $result =  $this->blogRepo->update($request);
         if ($result) {
-            return response()->json([
-                "success" => true,
-                "code" => 200,
-                "message" => "Data updated successfully"
-            ]);
+            return apiSuccessResponse($result = null, 'Data updated successfully');
+
         } else {
-            return response()->json([
-                "success" => false,
-                "code" => 400,
-                "message" => "Something went wrong please try again"
-            ]);
+            return apiResponseCommonError($validator->errors(), 'Validation Error');
         }
     }
 
@@ -164,20 +116,15 @@ class BlogController extends Controller
             'id' => 'required|numeric'
         ]);
         if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                "code" => 400,
-                "message" =>  $validator->errors()->all(),
-            ]);
+            return apiValidationErrorResponse($validator->errors(), 'Validation Error');
         }
         $result = $this->blogRepo->destroy($request->id);
 
         if ($result) {
-            return response()->json(['message' => 'Data deleted successfully']);
+            // return response()->json(['message' => 'Data deleted successfully']);
+            return apiSuccessResponse($result = null, 'Data deleted successfully');
         } else {
-            return response()->json(['message' => 'Data not found'], 404);
+            return apiErrorResponse($result = null, "Data not found");
         }
     }
 }
-
-

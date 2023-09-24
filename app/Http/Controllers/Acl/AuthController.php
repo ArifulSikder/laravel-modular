@@ -7,10 +7,20 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Repositories\UserRepository;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
+
+    protected $userRepository;
+
+    public function __construct(UserRepository $userRepository)
+    {
+        $this->userRepository = $userRepository;
+    }
+
+
     public function create(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -18,22 +28,28 @@ class AuthController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6|confirmed',
         ]);
+
         if ($validator->fails()) {
             return response()->json([
-                'success' => false,
                 "code" => 400,
-                "message" =>  ['error' => $validator->errors()->all()],
-                "items" => []
+                "error" =>  $validator->errors(),
+                "item" => []
             ]);
 
         }
-
-        $request['password'] = Hash::make($request['password']);
-        $request['remember_token'] = Str::random(10);
-        $user = User::create($request->toArray());
-        $token = $user->createToken('Password Grant Client')->accessToken;
-        $response = ['token' => $token];
-        return response($response, 200);
+        $result =  $this->userRepository->store($request);
+        if ($result) {
+            return response()->json([
+                "success" => true,
+                "code" => 200,
+                "message" => "User saved successfully"
+            ]);
+        } else {
+            return response()->json([
+                "code" => 400,
+                "message" => "Something went wrong please try again"
+            ]);
+        }
     }
 
     public function login(Request $request)
