@@ -1,0 +1,6 @@
+{
+    "Blog": true,
+    "Auth": true,
+    "CoreAuth": true,
+    "Post": true
+}
